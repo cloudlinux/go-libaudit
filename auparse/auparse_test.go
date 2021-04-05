@@ -363,3 +363,32 @@ func ExampleParseLogLine() {
 	//   "uid": "0"
 	//}
 }
+
+func Test_trimQuotesAndSpace(t *testing.T) {
+	tests := []struct {
+		v    string
+		want string
+	}{
+		{"", ""},
+		{`'value'`, "value"},
+		{`'value  '`, "value"},
+		{`'  value'`, "value"},
+		{`'  value '`, "value"},
+
+		{`"value"`, "value"},
+		{`"value  "`, "value"},
+		{`"  value"`, "value"},
+		{`"  value "`, "value"},
+
+		{` "value"`, `"value"`},
+		{`'value"`, `'value"`},
+		{`'"value"'`, `"value"`},
+	}
+	for _, tt := range tests {
+		t.Run(tt.v, func(t *testing.T) {
+			if got := trimQuotesAndSpace(tt.v); got != tt.want {
+				t.Errorf("trimQuotesAndSpace() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

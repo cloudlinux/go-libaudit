@@ -311,7 +311,16 @@ func extractKeyValuePairs(msg string, data map[string]*field) {
 	}
 }
 
-func trimQuotesAndSpace(v string) string { return strings.Trim(v, `'" `) }
+func trimQuotesAndSpace(v string) string {
+	quoteChars := []string{"'", `"`}
+	for _, c := range quoteChars {
+		if strings.HasPrefix(v, c) && strings.HasSuffix(v, c) {
+			v = v[len(c) : len(v)-len(c)]
+			break
+		}
+	}
+	return strings.TrimSpace(v)
+}
 
 // Enrichment after KV parsing
 
