@@ -161,13 +161,19 @@ func ParseLogLine(line string) (*AuditMessage, error) {
 		return nil, errInvalidAuditHeader
 	}
 
+	typeIndex := strings.Index(line, typeToken)
+	if typeIndex == -1 {
+		return nil, errInvalidAuditHeader
+	}
+	typeTokenLen := len(typeToken) + typeIndex
+
 	// Verify type=XXX is before msg=
-	if msgIndex < len(typeToken)+1 {
+	if msgIndex < typeTokenLen+1 {
 		return nil, errInvalidAuditHeader
 	}
 
 	// Convert the type to a number (i.e. type=SYSCALL -> 1300).
-	typName := line[len(typeToken) : msgIndex-1]
+	typName := line[typeTokenLen : msgIndex-1]
 	typ, err := GetAuditMessageType(typName)
 	if err != nil {
 		return nil, err
